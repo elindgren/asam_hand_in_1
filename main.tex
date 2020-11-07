@@ -1,0 +1,104 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[left=2.5cm,top=2.0cm,right=2.5cm,nofoot]{geometry}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{txfonts}
+\usepackage{microtype}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{moreverb}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{makecell}
+\usepackage{wasysym}
+\definecolor{listinggray}{gray}{0.98}
+\definecolor{lbcolor}{rgb}{0.98,0.98,0.98}
+\lstset{
+	backgroundcolor=\color{lbcolor},
+	tabsize=4,
+	rulecolor=,
+	language=matlab,
+    basicstyle=\scriptsize\ttfamily,
+    upquote=true,
+    aboveskip={1.5\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+
+\usepackage{eso-pic}
+\usepackage{ifthen}
+
+% ADDED BY SIMON
+\usepackage[nottoc]{tocbibind}
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{bibben.bib}
+
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{gensymb}
+\usepackage{siunitx}
+\usepackage{enumitem}
+
+\newlength\fwidth
+
+\title{Hand-in 1}
+\author{Eric Lindgren - CID: ericlin}
+\date{November 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Derivations}
+
+We are to study the MAP estimator for the stochastic variables $\theta$ given two different priors; a normal and a Laplace prior. In this specific case $\theta$ refers to model parameters for a linear model, with design matrix $\Phi$. The MAP is obtained by maximising the posterior for $\theta$ given some data $\mathcal{D}$, $p(\theta | \mathcal{D})$, with regards to $\theta$ (naturally). The posterior is given according to Bayes' theorem,
+
+\begin{equation}
+     p\left(\theta | \mathcal{D}\right) \propto p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta) = p(\theta) \prod_{i=1}^{N_p} p(d_i | \theta) =  p(\theta) \prod_{i=1}^{N_p} \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left({{- \frac{1}{2}\frac{\left(d_i - \left[\Phi \theta \right]_i\right)^2}{\sigma^2}}}\right)
+\end{equation}
+  
+in which we have assumed an independently and identically distributed (iid.) likelihood with normally distributed homoscedastic errors $\sigma^2$. The iid assumption allows us to write the total likelihood as a multiplicative joint distribution of the likelihood for all $N_p$ individual data points $\left\{d_i\right\}$. 
+
+Thus, the quantity which we want to maximize is:
+
+\begin{align*}
+    \underset{\theta}{\mathrm{argmax}} p\left(\theta | \mathcal{D}\right) &=  \underset{\theta}{\mathrm{argmax}} \left[ p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta)  \right] = \underset{\theta}{\mathrm{argmax}} \left[ p(\theta) \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left(- \frac{1}{2\sigma^2} \sum_{i=1}^{N_p} (d_i - \left[\Phi \theta \right]_i )^2 \right) \right] = \\
+    &= \underset{\theta}{\mathrm{argmax}} \left[ p(\theta) \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left(- \frac{1}{2\sigma^2} \left(\mathcal{D} - \Phi \theta \right)^T\left(\mathcal{D} - \Phi \theta \right)  \right) \right] \\
+    &= \underset{\theta}{\mathrm{argmax}} \left[ \ln{p(\theta)} - \frac{1}{2\sigma^2} \left(\mathcal{D} - \Phi \theta \right)^T\left(\mathcal{D} - \Phi \theta \right) \right] = \underset{\theta}{\mathrm{argmin}} \left[ -\ln{p(\theta)} + \frac{1}{2\sigma^2} \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) \right].
+\end{align*}
+Note that we are maximizing the logarithm of the posterior, since that is equivalent to maximizing the posterior, and that we've neglected constant contributions (i.e. terms independent of $\theta$) in the final expression since they will not affect the MAP estimate for $\theta$.
+
+Now we just need to insert the logarithm of the priors $p(\theta)$ in both cases. Both priors are uncorrelated for $\theta$, which is why we also may write the prior as a simple multiplicative joint distribution for all $p(\theta_i)$.
+
+\begin{align*}
+    \text{Normal parameter prior: } p(\theta) &= \prod_{i=1}^{N_p} \mathcal{N}(\theta_i \left\vert\right. 0, \sigma_0^2) = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\left({{- \frac{1}{2\sigma_0^2}\sum_{i=1}^{N_p} \left(\theta_i - 0\right)^2}}\right) = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\left( -\frac{1}{2\sigma_0^2} \theta^T\theta \right) \\
+    \text{Laplace parameter prior: } p(\theta) &= \prod_{i=1}^{N_p} \mathcal{L}(\theta_i \left\vert\right. 0, \sigma_0) = \frac{1}{2\sigma_0} \exp\left(- \frac{1}{\sigma_0}\sum_{i=1}^{N_p} \left\vert\theta_i - 0\right\vert \right) = \frac{1}{2\sigma_0} \exp\left(- \frac{1}{\sigma_0}\sum_{i=1}^{N_p} \left\vert\theta_i\right\vert \right)
+\end{align*}
+
+We now take the logarithm of both of these expressions and insert into our MAP expression. Omitting the constant terms, we obtain
+
+\begin{align*}
+    \text{Normal prior: } &\underset{\theta}{\mathrm{argmin}} \left[ \frac{1}{2\sigma_0^2}\theta^T\theta  + \frac{1}{2\sigma^2} \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) \right] = \underset{\theta}{\mathrm{argmin}} \left[ \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) + \frac{\sigma^2}{\sigma_0^2}\sum_{i=1}^{N_p} \theta_i^2  \right]  \\
+    \text{Laplace prior: } &\underset{\theta}{\mathrm{argmin}} \left[ \frac{1}{\sigma_0}\sum_{i=1}^{N_p} \left\vert\theta_i\right\vert + \frac{1}{2\sigma^2} \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) \right] = \underset{\theta}{\mathrm{argmin}} \left[ \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) + \frac{2\sigma^2}{\sigma_0}\sum_{i=1}^{N_p} \left\vert\theta_i\right\vert  \right].
+\end{align*}
+These expressions are exactly the sought Ridge regression estimator and LASSO regression estimator for $\theta$, with $\lambda_{\rm Ridge} = \frac{\sigma^2}{\sigma_0^2}$ and $\lambda_{\rm LASSO} = \frac{2\sigma^2}{\sigma_0}$.
+
+
+
+\section{Discussion}
+
+\end{document}
