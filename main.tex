@@ -68,12 +68,10 @@
 We are to study the MAP estimator for the stochastic variables $\theta$ given two different priors; a normal and a Laplace prior. In this specific case $\theta$ refers to model parameters for a linear model, with design matrix $\Phi$. The MAP is obtained by maximising the posterior for $\theta$ given some data $\mathcal{D}$, $p(\theta | \mathcal{D})$, with regards to $\theta$ (naturally). The posterior is given according to Bayes' theorem,
 
 \begin{equation}
-     p\left(\theta | \mathcal{D}\right) \propto p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta) = p(\theta) \prod_{i=1}^{N_p} p(d_i | \theta) =  p(\theta) \prod_{i=1}^{N_p} \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left({{- \frac{1}{2}\frac{\left(d_i - \left[\Phi \theta \right]_i\right)^2}{\sigma^2}}}\right)
+     p\left(\theta | \mathcal{D}\right) \propto p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta) = p(\theta) \prod_{i=1}^{N_p} p(d_i | \theta) =  p(\theta) \prod_{i=1}^{N_p} \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left(- \frac{1}{2}\frac{\left(d_i - \left[\Phi \theta \right]_i\right)^2}{\sigma^2}\right)
 \end{equation}
   
-in which we have assumed an independently and identically distributed (iid.) likelihood with normally distributed homoscedastic errors $\sigma^2$. The iid assumption allows us to write the total likelihood as a multiplicative joint distribution of the likelihood for all $N_p$ individual data points $\left\{d_i\right\}$. 
-
-Thus, the quantity which we want to maximize is:
+in which we have assumed an independently and identically distributed (iid.) likelihood with normally distributed homoscedastic errors $\sigma^2$. The iid assumption allows us to write the total likelihood as a multiplicative joint distribution of the likelihood for all $N_p$ individual data points $\left\{d_i\right\}$. Thus, the quantity which we want to maximize is:
 
 \begin{align*}
     \underset{\theta}{\mathrm{argmax}} p\left(\theta | \mathcal{D}\right) &=  \underset{\theta}{\mathrm{argmax}} \left[ p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta)  \right] = \underset{\theta}{\mathrm{argmax}} \left[ p(\theta) \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left(- \frac{1}{2\sigma^2} \sum_{i=1}^{N_p} (d_i - \left[\Phi \theta \right]_i )^2 \right) \right] = \\
@@ -96,9 +94,14 @@ We now take the logarithm of both of these expressions and insert into our MAP e
     \text{Laplace prior: } &\underset{\theta}{\mathrm{argmin}} \left[ \frac{1}{\sigma_0}\sum_{i=1}^{N_p} \left\vert\theta_i\right\vert + \frac{1}{2\sigma^2} \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) \right] = \underset{\theta}{\mathrm{argmin}} \left[ \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) + \frac{2\sigma^2}{\sigma_0}\sum_{i=1}^{N_p} \left\vert\theta_i\right\vert  \right].
 \end{align*}
 These expressions are exactly the sought Ridge regression estimator and LASSO regression estimator for $\theta$, with $\lambda_{\rm Ridge} = \frac{\sigma^2}{\sigma_0^2}$ and $\lambda_{\rm LASSO} = \frac{2\sigma^2}{\sigma_0}$.
-
-
+We can relate this to the ordinary least squares estimator $\hat{\theta}_{\rm OLS} = \underset{\theta}{\mathrm{argmin}} \chi^2(\theta) = \underset{\theta}{\mathrm{argmin}} \left[ \left(\Phi \theta -  \mathcal{D} \right)^T\left(\Phi \theta -  \mathcal{D} \right) \right]$. We thus obtain the OLS estimator from our expressions above when $\lambda=0$, i.e. when $\sigma_0 \rightarrow \infty$. This would correspond to assuming a uniform prior distribution for $\theta$.
 
 \section{Discussion}
+
+The way in which we obtained the OLS estimate above hints at the role of $\lambda$ in our MAP estimates for $\theta$. It seems to encode our prior information, but how we interpret the term differs between the frequentist and the Bayesian perspective. From a frequentist perspective, this factor is a hyperparameter controlling the size of the penalty in either the case of Ridge and LASSO regularization. From a Bayesian perspective, it encodes information on the shape of our prior for $\theta$; we find the variance $\sigma_0^2$ for the normal parameter prior and the scale parameter $\sigma_0$ for the Laplace distribution prior in the denominator of $\lambda_{\rm Ridge}$ and $\lambda_{\rm LASSO}$ respectively. Here we also see first hand the coupling between regularization and a Bayesian prior; for small $\sigma_0^2$ and $\sigma_0$, i.e. priors that are sharply peaked around $\theta=0$ in our case, the regularization parameter $\lambda$ becomes large and we heavily penalize larger parameter values for $\theta$. Heuristically, this corresponds to the case when we are fairly ``sure'' on the value of $\theta$ \textit{a priori}, and vice versa for large $\sigma_0^2$ and $\sigma_0$. However, this effect is balanced by the variance in the measured data $\sigma^2$; for larger $\sigma^2$ the penalization will be greater, or in other words when the data is noisy the regularization favors a smaller magnitude of the model parameters, possibly to avoid overfitting to the noisy data, and vice versa for small $\sigma^2$.
+
+Taking a step back, we may see regularization and Bayesian priors to fill somewhat of the same role \cite{tds}. They are both attempts at introducing other information on our expected model than the measurement data itself. How this information is formulated differs between the frequentist and Bayesian frameworks. In the frequentist framework we use regularization to improve an ill-posed regression problem or to minimize overfitting \cite{wiki_reg}; in both Ridge and LASSO regularization as in this example we penalize large model parameters $\theta$, since we expect the model parameters of models modelling reality to be ``physical''. In the Bayesian framework we encode this same information in the prior, where we instead use our ``physical'' knowledge of the system to \textit{a priori} formulate the expected distribution for the model parameters explicitly. And as we've seen, both of these approaches yields the same maximum \textit{a posteriori} estimate in the cases that we've looked into, which hints at regularization and priors being two sides of the same coin.
+
+\printbibliography
 
 \end{document}
