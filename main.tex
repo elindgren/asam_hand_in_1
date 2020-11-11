@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[left=2.5cm,top=2.0cm,right=2.5cm,nofoot]{geometry}
+\usepackage[left=2.5cm,top=1.80cm,right=2.5cm,nofoot]{geometry}
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -71,7 +71,7 @@ We are to study the MAP estimator for the stochastic variables $\theta$ given tw
      p\left(\theta | \mathcal{D}\right) \propto p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta) = p(\theta) \prod_{i=1}^{N_d} p(d_i | \theta) =  p(\theta) \prod_{i=1}^{N_d} \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left(- \frac{1}{2}\frac{\left(d_i - \left[\Phi \theta \right]_i\right)^2}{\sigma^2}\right)
 \end{equation}
   
-in which we have assumed an independently and identically distributed (iid.) likelihood with normally distributed homoscedastic errors $\sigma^2$. The iid assumption allows us to write the total likelihood as a multiplicative joint distribution of the likelihood for all $N_p$ individual data points $\left\{d_i\right\}$. Thus, the quantity which we want to maximize is:
+in which we have assumed an independently and identically distributed (iid.) likelihood with normally distributed homoscedastic errors $\sigma^2$. The iid assumption allows us to write the total likelihood as a multiplicative joint distribution of the likelihood for all $N_d$ individual data points $\left\{d_i\right\}$. Thus, the quantity which we want to maximize is:
 
 \begin{align*}
     \underset{\theta}{\mathrm{argmax}} p\left(\theta | \mathcal{D}\right) &=  \underset{\theta}{\mathrm{argmax}} \left[ p\left(\mathcal{D} | \theta, \sigma^2\right) p(\theta)  \right] = \underset{\theta}{\mathrm{argmax}} \left[ p(\theta) \frac{1}{\sqrt{2\pi \sigma_^2}} \exp\left(- \frac{1}{2\sigma^2} \sum_{i=1}^{N_d} (d_i - \left[\Phi \theta \right]_i )^2 \right) \right] = \\
